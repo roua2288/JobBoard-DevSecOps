@@ -68,7 +68,7 @@ def create_app(config=None):
     def headers(response):
         response.headers.update({'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'same-origin','Content-Security-Policy':"default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",'Cache-Control':'no-store','X-Correlation-ID':g.correlation})
         if app.config['SESSION_COOKIE_SECURE']:response.headers['Strict-Transport-Security']='max-age=31536000'
-        if request.endpoint == 'index' or (app.config['LAB_MODE'] and request.path.startswith('/lab/')):
+        if app.config['LAB_MODE'] and request.path.startswith('/lab/'):
             response.headers.pop('Content-Security-Policy',None)
         return response
     @app.context_processor
@@ -105,9 +105,9 @@ def create_app(config=None):
     @app.route('/')
     def index():
         q=request.args.get('q','')[:120]
-        sql = "SELECT * FROM jobs WHERE status='active' AND title LIKE '%" + q + "%'"
-        jobs = db().execute(sql).fetchall()
-        return render_template('jobs.html', jobs=jobs, q=q) + '<div>' + q + '</div>'
+        sql = "SELECT * FROM jobs WHERE status='active' AND title LIKE ?"
+        jobs = db().execute(sql, (f"%{q}%",)).fetchall()
+        return render_template('jobs.html', jobs=jobs, q=q)
     @app.route('/jobs/<int:job_id>')
     def job_detail(job_id):
         job=db().execute('SELECT * FROM jobs WHERE id=?',(job_id,)).fetchone()
