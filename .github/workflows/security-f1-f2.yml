@@ -1,4 +1,4 @@
-﻿name: F1-F2 Security Pipeline
+name: F1-F2 Security Pipeline
 
 on:
   push:
@@ -74,6 +74,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Generate temporary DAST password
+        run: |
+          PASSWORD=$(openssl rand -hex 24)
+          echo "::add-mask::$PASSWORD"
+          echo "DAST_PASSWORD=$PASSWORD" >> "$GITHUB_ENV"
+
       - name: Start JobBoard test environment
         run: |
           python -m scripts.start_dast_f1_f2 > dast-server.log 2>&1 &
@@ -90,6 +96,11 @@ jobs:
         run: |
           curl -fsS -D headers.txt -o /dev/null http://127.0.0.1:8002/
           grep -qi "^Content-Security-Policy:" headers.txt
+
+      - name: Authenticated F1 and F2 HTTP checks
+        run: |
+          pip install requests
+          python scripts/dast_f1_f2.py | tee dast-authenticated.txt
 
       - name: Run OWASP ZAP
         run: |
@@ -113,3 +124,4 @@ jobs:
             zap-reports/
             dast-server.log
             headers.txt
+            dast-authenticated.txt
