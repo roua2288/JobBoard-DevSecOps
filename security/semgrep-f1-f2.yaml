@@ -1,0 +1,22 @@
+﻿rules:
+  - id: jobboard-f1-sql-injection
+    message: SQL query constructed using string concatenation.
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern: $SQL = $PREFIX + $INPUT + $SUFFIX
+      - metavariable-regex:
+          metavariable: $PREFIX
+          regex: (?i).*SELECT.*
+    metadata:
+      cwe: CWE-89
+      category: security
+
+  - id: jobboard-f2-reflected-xss
+    message: Unescaped data concatenated to an HTML response.
+    severity: ERROR
+    languages: [python]
+    pattern: return render_template(...) + $PREFIX + $INPUT + $SUFFIX
+    metadata:
+      cwe: CWE-79
+      category: security

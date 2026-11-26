@@ -1,0 +1,57 @@
+﻿name: F1-F2 Security Pipeline
+
+on:
+  push:
+    branches: [roua]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+
+  sast:
+    name: SAST - SQL Injection and XSS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Security analysis
+        run: semgrep scan --config security/semgrep-f1-f2.yaml --error app/
+
+  security-tests:
+    name: Security Tests - F1 and F2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+
+      - name: Run F1 and F2 tests
+        run: python -m pytest tests/test_f1_f2.py -v --junitxml=security-results.xml
+
+      - name: Upload security report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f1-f2-security-report
+          path: security-results.xml
