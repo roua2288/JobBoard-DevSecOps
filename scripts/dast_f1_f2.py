@@ -1,4 +1,4 @@
-﻿import os
+import os
 import requests
 from html.parser import HTMLParser
 
@@ -67,4 +67,22 @@ with requests.Session() as client:
     assert "'unsafe-inline'" not in csp
     print("PASS - F2 Content Security Policy")
 
+
+    response = client.get(
+        BASE + "/", params={"q": "DevSecOps"}, timeout=10
+    )
+    assert response.status_code == 200
+    assert "OFFRE_PRIVEE_TEST" not in response.text
+    assert ">DevSecOps</a>" in response.text
+    print("PASS - F1 normal search and confidentiality")
+
+    response = client.get(
+        BASE + "/", params={"q": '<b>SecurityTest</b>'}, timeout=10
+    )
+    assert response.status_code == 200
+    assert "<b>SecurityTest</b>" not in response.text
+    assert "&lt;b&gt;SecurityTest&lt;/b&gt;" in response.text
+    print("PASS - F2 safe HTML rendering")
+
 print("All authenticated HTTP security checks passed.")
+
