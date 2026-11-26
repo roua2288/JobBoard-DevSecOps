@@ -1,0 +1,13 @@
+rules:
+  - id: python-sql-concatenation
+    languages: [python]
+    severity: ERROR
+    message: Use SQL parameters instead of concatenating strings.
+    pattern-either:
+      - pattern: $DB.execute($X + $Y, ...)
+      - pattern: $DB.execute($X + $Y)
+  - id: template-unsafe-rendering
+    languages: [python]
+    severity: ERROR
+    message: Do not render request input as a template.
+    pattern: render_template_string(request.$ATTR(...), ...)

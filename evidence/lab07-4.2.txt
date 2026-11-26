@@ -1,0 +1,9 @@
+AVANT F1 SQLi offre privée visible=True
+AVANT F2 XSS script brut=True, CSP=False
+AVANT F3 IDOR HTTP 200
+AVANT F4 rôle admin inscription HTTP 302, métriques HTTP 200
+AVANT F5 CSRF HTTP 302, profil modifié=True
+AVANT F6 limitation connexion sixième essai HTTP 302
+AVANT F7 faux PDF HTTP 302, fichiers enregistrés=1
+AVANT F8 fuite de clé HTTP 200, session forgée métriques HTTP 200
+OK: 8 failles initiales reproduites sur HTTP local.

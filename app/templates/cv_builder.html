@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="eyebrow">ESPACE CANDIDAT</div>
+<div class="section-head"><div><h1>Créez votre propre CV.</h1><p class="muted">Complétez votre parcours, puis téléchargez votre CV ou enregistrez-le pour postuler.</p></div><a href="/dashboard" class="secondary">← Mon espace</a></div>
+<form method="post" class="form-card wide">
+<input type="hidden" name="csrf" value="{{csrf}}">
+<h2>Informations personnelles</h2>
+{% for key in ['name','title','email','phone','city'] %}
+<label>{{fields[key][0]}}{% if key in ['name','email'] %} *{% endif %}
+<input name="{{key}}" value="{{draft.get(key,'')}}" maxlength="{{fields[key][1]}}" {% if key in ['name','email'] %}required{% endif %} {% if key=='email' %}type="email"{% endif %}></label>
+{% endfor %}
+{% for key in ['summary','experience','education','projects','skills','languages','certifications'] %}
+<label>{{fields[key][0]}}<textarea name="{{key}}" rows="{{3 if key in ['summary','languages'] else 5}}" maxlength="{{fields[key][1]}}" placeholder="Une expérience, une formation ou un élément par ligne">{{draft.get(key,'')}}</textarea></label>
+{% endfor %}
+<p class="muted">Seuls le nom et l’email sont obligatoires. Les rubriques laissées vides ne figurent pas dans le PDF. Le brouillon reste privé.</p>
+<div class="inline cv-actions"><button name="action" value="draft" class="secondary">Enregistrer le brouillon</button><button name="action" value="download" class="secondary">Télécharger le PDF</button><button name="action" value="save">Enregistrer pour postuler →</button></div>
+</form>
+{% endblock %}

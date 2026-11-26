@@ -1,0 +1,1 @@
+document.querySelectorAll(".reveal").forEach(b=>b.onclick=()=>{const i=b.parentElement.querySelector("input");i.type=i.type==="password"?"text":"password";b.textContent=i.type==="password"?"Afficher":"Masquer"});

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block content %}<a href="/" class="muted">← Toutes les offres</a><div class="section-head"><div><div class="eyebrow">{{job.company}}</div><h1>{{job.title}}</h1><p>⌖ {{job.location}} &nbsp; <span class="pill">{{job.contract}}</span></p></div></div><div class="two-col"><section class="panel"><h2>À propos du poste</h2><p class="description">{{job.description}}</p></section><section class="panel"><h2>Faites le premier pas.</h2><p class="muted">Votre candidature est transmise au recruteur de cette offre.</p>{% if user and user.role=='candidate' %}{% if applied %}<div class="notice">Vous avez déjà postulé.</div>{% else %}
+<form method="post" enctype="multipart/form-data" action="/jobs/{{job.id}}/apply">
+  <input type="hidden" name="csrf" value="{{csrf}}">
+  <label>Joindre un CV depuis mon PC
+    <input type="file" name="cv_file" accept="application/pdf,.pdf"{% if not cvs %} required{% endif %}>
+  </label>
+  <p class="muted">PDF · 2 Mo et 20 pages maximum.</p>
+  {% if cvs %}
+  <label>Ou choisir un CV enregistré
+    <select name="cv">
+      <option value="">Sélectionner un CV</option>
+      {% for c in cvs %}<option value="{{c.id}}">CV du {{c.created}}</option>{% endfor %}
+    </select>
+  </label>
+  <p class="muted">Si tu joins un fichier, ce fichier sera utilisé.</p>
+  {% endif %}
+  <button>Envoyer ma candidature ↗</button>
+</form>
+{% endif %}{% elif not user %}<a class="button" href="/login">Se connecter pour postuler</a>{% else %}<p>Connectez-vous avec un compte candidat pour postuler.</p>{% endif %}</section></div>{% endblock %}
