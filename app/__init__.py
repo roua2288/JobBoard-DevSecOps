@@ -105,8 +105,8 @@ def create_app(config=None):
     @app.route('/')
     def index():
         q=request.args.get('q','')[:120]
-        sql = "SELECT * FROM jobs WHERE status='active' AND title LIKE '%" + q + "%'"
-        jobs = db().execute(sql).fetchall()
+        sql = "SELECT * FROM jobs WHERE status='active' AND title LIKE ?"
+        jobs = db().execute(sql, (f"%{q}%",)).fetchall()
         return render_template('jobs.html', jobs=jobs, q=q) + '<div>' + q + '</div>'
     @app.route('/jobs/<int:job_id>')
     def job_detail(job_id):
